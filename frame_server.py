@@ -16,8 +16,6 @@ def set_photo():
   file = request.files['image']
   photo = Image.open(file)
   photo.save('static/original.jpg')
-  # photo.thumbnail((800,480))
-  # photo = photo.convert(mode='1',dither=Image.FLOYDSTEINBERG)
   width, height = photo.size
   if height > width:
     photo = photo.rotate(90, expand=True)
