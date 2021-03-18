@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template
 from PIL import Image
+from lib.photo_processing import process_photo
 
 app = Flask(__name__)
 
@@ -13,16 +14,11 @@ def original():
 
 @app.route('/photo', methods=['POST'])
 def set_photo():
-  file = request.files['image']
-  photo = Image.open(file)
+  photo = Image.open(request.files['image'])
   photo.save('static/original.jpg')
-  width, height = photo.size
-  if height > width:
-    photo = photo.rotate(90, expand=True)
-  photo.thumbnail((800,480))
-  photo = photo.convert(mode='1',dither=Image.FLOYDSTEINBERG)
+  photo = process_photo(photo)
   photo.save('static/converted.jpg')
-  return ('', 204)
+  return render_template('show_photo.html', image_type='converted')
 
 @app.after_request
 def add_header(r):
@@ -35,3 +31,4 @@ def add_header(r):
     r.headers["Expires"] = "0"
     r.headers['Cache-Control'] = 'public, max-age=0'
     return r
+
