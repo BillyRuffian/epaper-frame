@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template
 from PIL import Image
 from lib.photo_processing import process_photo
+from waveshare_epd import epd7in5_V2 as epd
 
 app = Flask(__name__)
 
@@ -18,6 +19,11 @@ def set_photo():
   photo.save('static/original.jpg')
   photo = process_photo(photo)
   photo.save('static/converted.jpg')
+  epaper = epd.EPD()
+  epaper.init()
+  #epaper.Clear()
+  epaper.display(epaper.getbuffer(photo))
+  epaper.sleep()
   return render_template('show_photo.html', image_type='converted')
 
 @app.after_request
