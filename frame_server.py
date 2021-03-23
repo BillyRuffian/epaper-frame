@@ -2,8 +2,11 @@ from flask import Flask, request, render_template
 from PIL import Image
 from lib.photo_processing import process_photo
 from waveshare_epd import epd7in5_V2 as epd
+from concurrent.futures import ThreadPoolExecutor
+
 
 app = Flask(__name__)
+executor = ThreadPoolExecutor(2)
 
 @app.route('/')
 def index():
@@ -19,11 +22,7 @@ def set_photo():
   photo.save('static/original.jpg')
   photo = process_photo(photo)
   photo.save('static/converted.jpg')
-  epaper = epd.EPD()
-  epaper.init()
-  #epaper.Clear()
-  epaper.display(epaper.getbuffer(photo))
-  epaper.sleep()
+  executor.submit(update_frame, photo)
   return render_template('show_photo.html', image_type='converted')
 
 @app.after_request
@@ -38,3 +37,9 @@ def add_header(r):
     r.headers['Cache-Control'] = 'public, max-age=0'
     return r
 
+def update_frame(photo):
+  epaper = epd.EPD()
+  epaper.init()
+  #epaper.Clear()
+  epaper.display(epaper.getbuffer(photo))
+  epaper.sleep()
