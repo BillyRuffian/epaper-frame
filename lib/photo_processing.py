@@ -20,7 +20,7 @@ def brighten(photo):
 
 def contrast(photo):
     enhancer = ImageEnhance.Contrast(photo)
-    return enhancer.enhance(2.0)
+    return enhancer.enhance(1.5)
 
 def crop(photo):
   width, height = photo.size
