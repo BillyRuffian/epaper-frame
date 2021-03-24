@@ -19,6 +19,7 @@ def original():
 @app.route('/photo', methods=['POST'])
 def set_photo():
   photo = Image.open(request.files['image'])
+  photo = photo.convert("RGB")
   photo.save('static/original.jpg')
   photo = process_photo(photo)
   photo.save('static/converted.jpg')
