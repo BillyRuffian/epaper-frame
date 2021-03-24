@@ -1,7 +1,9 @@
-from PIL import Image
+from PIL import Image, ImageEnhance
 
 def process_photo(photo):
   photo = orient(photo)
+  photo = brighten(photo)
+  photo = contrast(photo)
   photo.thumbnail((800,800))
   photo = crop(photo)
   return photo.convert(mode='1',dither=Image.FLOYDSTEINBERG)
@@ -11,6 +13,14 @@ def orient(photo):
   if height > width:
     photo = photo.rotate(90, expand=True)
   return photo
+
+def brighten(photo):
+    enhancer = ImageEnhance.Brightness(photo)
+    return enhancer.enhance(1.5)
+
+def contrast(photo):
+    enhancer = ImageEnhance.Contrast(photo)
+    return enhancer.enhance(2.0)
 
 def crop(photo):
   width, height = photo.size
